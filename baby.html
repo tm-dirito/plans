@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Plans for Today</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FEFBF6; /* A warm, creamy background */
+        }
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .icon-pumpkin, .icon-meeting, .icon-heart {
+            transition: all 0.4s ease-in-out;
+        }
+
+        /* --- Fun Hover Animations --- */
+
+        /* Pumpkin Bounce */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .event-card:hover .icon-pumpkin {
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+
+        /* Meeting Wiggle */
+        @keyframes wiggle {
+          0%, 100% { transform: rotate(0); }
+          25% { transform: rotate(-5deg) scale(1.05); }
+          75% { transform: rotate(5deg) scale(1.05); }
+        }
+        .event-card:hover .icon-meeting {
+            animation: wiggle 0.5s ease-in-out;
+        }
+
+        /* Heartbeat */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .icon-heart {
+            animation: pulse 2.5s infinite cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        }
+        .event-card:hover .icon-heart {
+            animation-duration: 0.6s; /* Faster heartbeat on hover */
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <main class="w-full max-w-2xl mx-auto">
+        <div class="text-center mb-12">
+            <h1 class="title-font text-5xl md:text-6xl font-bold text-gray-800">Today's Plans</h1>
+            <p id="date" class="text-xl text-gray-500 mt-2">Thursday, October 16th</p>
+        </div>
+
+        <div class="space-y-8">
+
+            <!-- Event 1: Pumpkins -->
+            <div class="event-card bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 md:space-x-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex-shrink-0">
+                    <!-- New, more detailed pumpkin SVG -->
+                    <svg class="icon-pumpkin h-20 w-20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="pumpkinGradient" cx="0.5" cy="0.5" r="0.5">
+                                <stop offset="0%" stop-color="#fca311"/>
+                                <stop offset="100%" stop-color="#e85d04"/>
+                            </radialGradient>
+                        </defs>
+                        <path fill="#588157" d="M18,4 C18,2.896 17.104,2 16,2 C14.896,2 14,2.896 14,4 L14,7 C14,7 18,7 18,7 Z"/>
+                        <path fill="url(#pumpkinGradient)" d="M16,8 C7,8 3,31 16,31 C29,31 25,8 16,8 Z"/>
+                        <path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C11,8 10,31 16,31"/>
+                        <path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C21,8 22,31 16,31"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xl md:text-2xl font-bold text-orange-600">2:00 pm</p>
+                    <p class="text-lg md:text-xl text-gray-700 mt-1">I help you get pumpkins</p>
+                </div>
+            </div>
+
+            <!-- Event 2: Stand Meeting -->
+            <div class="event-card bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 md:space-x-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex-shrink-0">
+                    <svg class="icon-meeting h-20 w-20 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xl md:text-2xl font-bold text-indigo-600">6:00 pm</p>
+                    <p class="text-lg md:text-xl text-gray-700 mt-1">Stand meeting</p>
+                </div>
+            </div>
+
+            <!-- Event 3: Dinner and Massage -->
+            <div class="event-card bg-rose-50 border-2 border-rose-200 rounded-2xl shadow-lg p-6 flex items-center space-x-4 md:space-x-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="flex-shrink-0">
+                    <svg class="icon-heart h-20 w-20 text-rose-500" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xl md:text-2xl font-bold text-rose-600">8:00 pm</p>
+                    <p class="text-lg md:text-xl text-gray-700 mt-1">Dinner and massage for my love ❤️ because you've worked so hard and so much this week and you deserve it.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script>
+        // Set the date dynamically, though the prompt implies a static page, this is a nice touch.
+        const dateElement = document.getElementById('date');
+        const today = new Date();
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        // Using a static date as requested by the context
+        const staticDate = new Date('2025-10-16T12:00:00Z');
+        dateElement.textContent = staticDate.toLocaleDateString('en-US', options);
+    </script>
+</body>
+</html>
+
