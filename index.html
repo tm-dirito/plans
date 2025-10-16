@@ -11,7 +11,10 @@
     <style>
         body {
             font-family: 'Lato', sans-serif;
-            background-color: #FEFBF6; /* A warm, creamy background */
+            background-color: #FEFBF6;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
         }
         .title-font {
             font-family: 'Playfair Display', serif;
@@ -19,43 +22,60 @@
         .icon-pumpkin, .icon-meeting, .icon-heart {
             transition: all 0.4s ease-in-out;
         }
-
-        /* --- Fun Hover Animations --- */
-
-        /* Pumpkin Bounce */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-        }
         .event-card:hover .icon-pumpkin {
-            animation: bounce 0.8s ease-in-out infinite alternate;
-        }
-
-        /* Meeting Wiggle */
-        @keyframes wiggle {
-          0%, 100% { transform: rotate(0); }
-          25% { transform: rotate(-5deg) scale(1.05); }
-          75% { transform: rotate(5deg) scale(1.05); }
+             transform: scale(1.1) rotate(5deg);
         }
         .event-card:hover .icon-meeting {
-            animation: wiggle 0.5s ease-in-out;
+            transform: scale(1.1);
         }
-
-        /* Heartbeat */
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
         .icon-heart {
             animation: pulse 2.5s infinite cubic-bezier(0.455, 0.03, 0.515, 0.955);
         }
-        .event-card:hover .icon-heart {
-            animation-duration: 0.6s; /* Faster heartbeat on hover */
+        /* Game Canvas Styles */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Control max width on large screens */
+            margin: 2rem auto 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
+        #game-canvas {
+            display: block;
+            width: 100%;
+            background-color: #f0f8ff;
+        }
+        #game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+         #game-overlay.active {
+            opacity: 1;
+            visibility: visible;
+         }
     </style>
 </head>
-<body class="text-gray-800 flex items-center justify-center min-h-screen p-4">
+<body class="text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
 
     <main class="w-full max-w-2xl mx-auto">
         <div class="text-center mb-12">
@@ -64,22 +84,14 @@
         </div>
 
         <div class="space-y-8">
-
             <!-- Event 1: Pumpkins -->
             <div class="event-card bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 md:space-x-6 hover:shadow-xl transition-shadow duration-300">
                 <div class="flex-shrink-0">
-                    <!-- New, more detailed pumpkin SVG -->
-                    <svg class="icon-pumpkin h-20 w-20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <radialGradient id="pumpkinGradient" cx="0.5" cy="0.5" r="0.5">
-                                <stop offset="0%" stop-color="#fca311"/>
-                                <stop offset="100%" stop-color="#e85d04"/>
-                            </radialGradient>
-                        </defs>
+                     <svg class="icon-pumpkin h-20 w-20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <defs><radialGradient id="pumpkinGradient" cx="0.5" cy="0.5" r="0.5"><stop offset="0%" stop-color="#fca311"/><stop offset="100%" stop-color="#e85d04"/></radialGradient></defs>
                         <path fill="#588157" d="M18,4 C18,2.896 17.104,2 16,2 C14.896,2 14,2.896 14,4 L14,7 C14,7 18,7 18,7 Z"/>
                         <path fill="url(#pumpkinGradient)" d="M16,8 C7,8 3,31 16,31 C29,31 25,8 16,8 Z"/>
-                        <path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C11,8 10,31 16,31"/>
-                        <path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C21,8 22,31 16,31"/>
+                        <path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C11,8 10,31 16,31"/><path fill="none" stroke="#c24902" stroke-width="1.2" stroke-linecap="round" d="M16,8 C21,8 22,31 16,31"/>
                     </svg>
                 </div>
                 <div>
@@ -92,10 +104,7 @@
             <div class="event-card bg-white rounded-2xl shadow-lg p-6 flex items-center space-x-4 md:space-x-6 hover:shadow-xl transition-shadow duration-300">
                 <div class="flex-shrink-0">
                     <svg class="icon-meeting h-20 w-20 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                 </div>
                 <div>
@@ -116,17 +125,198 @@
                     <p class="text-lg md:text-xl text-gray-700 mt-1">Dinner and massage for my love ❤️ because you've worked so hard and so much this week and you deserve it.</p>
                 </div>
             </div>
-
         </div>
     </main>
+
+    <!-- Dino Game -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="game-overlay">
+            <h2 id="end-message" class="text-2xl md:text-3xl font-bold mb-4">I love you more than anything in this world &lt;3</h2>
+            <p id="restart-text" class="text-lg">Tap or press Space to play again!</p>
+        </div>
+    </div>
+
     <script>
-        // Set the date dynamically, though the prompt implies a static page, this is a nice touch.
-        const dateElement = document.getElementById('date');
-        const today = new Date();
-        const options = { weekday: 'long', month: 'long', day: 'numeric' };
-        // Using a static date as requested by the context
-        const staticDate = new Date('2025-10-16T12:00:00Z');
-        dateElement.textContent = staticDate.toLocaleDateString('en-US', options);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set the date
+            const dateElement = document.getElementById('date');
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            const staticDate = new Date('2025-10-16T12:00:00Z');
+            dateElement.textContent = staticDate.toLocaleDateString('en-US', options);
+
+            // --- Platformer Game ---
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            const gameOverlay = document.getElementById('game-overlay');
+            
+            let canvasWidth, canvasHeight;
+            let player, obstacles = [], score = 0, frameCount = 0, gameOver = false;
+            let gameSpeed = 3;
+
+            // Player character (a heart)
+            const playerChar = {
+                x: 50,
+                y: 0,
+                width: 30,
+                height: 30,
+                velocityY: 0,
+                gravity: 0.5,
+                jumpStrength: -10,
+                isJumping: false,
+
+                draw() {
+                    ctx.fillStyle = '#ef4444';
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y + this.height / 4);
+                    ctx.quadraticCurveTo(this.x, this.y, this.x + this.width / 4, this.y);
+                    ctx.quadraticCurveTo(this.x + this.width / 2, this.y, this.x + this.width / 2, this.y + this.height / 4);
+                    ctx.quadraticCurveTo(this.x + this.width / 2, this.y, this.x + (3 * this.width / 4), this.y);
+                    ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + this.height / 4);
+                    ctx.quadraticCurveTo(this.x + this.width, this.y + this.height / 2, this.x + this.width / 2, this.y + this.height);
+                    ctx.quadraticCurveTo(this.x, this.y + this.height / 2, this.x, this.y + this.height / 4);
+                    ctx.fill();
+                },
+
+                update() {
+                    this.velocityY += this.gravity;
+                    this.y += this.velocityY;
+
+                    // Prevent falling through the ground
+                    if (this.y + this.height > canvasHeight - 20) {
+                        this.y = canvasHeight - 20 - this.height;
+                        this.velocityY = 0;
+                        this.isJumping = false;
+                    }
+                },
+
+                jump() {
+                    if (!this.isJumping) {
+                        this.velocityY = this.jumpStrength;
+                        this.isJumping = true;
+                    }
+                }
+            };
+
+            // Obstacles
+            class Obstacle {
+                constructor(x, y, width, height) {
+                    this.x = x;
+                    this.y = y;
+                    this.width = width;
+                    this.height = height;
+                }
+                draw() {
+                    ctx.fillStyle = '#6b7280';
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+                update() {
+                    this.x -= gameSpeed;
+                }
+            }
+
+            function setCanvasSize() {
+                const container = document.getElementById('game-container');
+                canvasWidth = container.clientWidth;
+                canvasHeight = canvasWidth * 0.5; // Aspect ratio
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+            }
+
+            function startGame() {
+                setCanvasSize();
+                player = Object.assign({}, playerChar);
+                player.y = canvasHeight - 20 - player.height;
+                obstacles = [];
+                score = 0;
+                frameCount = 0;
+                gameSpeed = 3;
+                gameOver = false;
+                gameOverlay.classList.remove('active');
+                gameLoop();
+            }
+            
+            function handleInput() {
+                if (gameOver) {
+                    startGame();
+                } else {
+                    player.jump();
+                }
+            }
+
+            function gameLoop() {
+                if (gameOver) return;
+
+                requestAnimationFrame(gameLoop);
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                // Draw ground
+                ctx.fillStyle = '#9ca3af';
+                ctx.fillRect(0, canvasHeight - 20, canvasWidth, 20);
+
+                // Player
+                player.update();
+                player.draw();
+
+                // Obstacles
+                frameCount++;
+                if (frameCount % Math.floor(150 / (gameSpeed/3)) === 0) {
+                     const obsHeight = Math.random() * 40 + 20;
+                     const obsWidth = 20;
+                     obstacles.push(new Obstacle(canvasWidth, canvasHeight - 20 - obsHeight, obsWidth, obsHeight));
+                }
+
+                obstacles.forEach((obs, index) => {
+                    obs.update();
+                    obs.draw();
+
+                    // Collision detection
+                    if (player.x < obs.x + obs.width &&
+                        player.x + player.width > obs.x &&
+                        player.y < obs.y + obs.height &&
+                        player.y + player.height > obs.y) {
+                        gameOver = true;
+                        gameOverlay.classList.add('active');
+                    }
+                    
+                    // Remove off-screen obstacles
+                    if (obs.x + obs.width < 0) {
+                        obstacles.splice(index, 1);
+                        score++;
+                    }
+                });
+                
+                // Increase speed over time
+                if(frameCount % 500 === 0) {
+                    gameSpeed += 0.2;
+                }
+
+                // Draw score
+                ctx.fillStyle = '#111827';
+                ctx.font = '20px Lato';
+                ctx.fillText(`Score: ${score}`, 10, 25);
+            }
+
+            // Event Listeners
+            window.addEventListener('resize', startGame);
+            document.body.addEventListener('keydown', e => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    handleInput();
+                }
+            });
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleInput();
+            });
+             gameOverlay.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleInput();
+            });
+
+            // Initial Start
+            startGame();
+        });
     </script>
 </body>
 </html>
